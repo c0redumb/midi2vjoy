@@ -151,10 +151,6 @@ def joystick_run():
 						# A button input
 						vjoy.SetBtn(reading, opt[0], int(opt[1]))
 						print('Button value sent')
-						if key[0] == 128:
-							# A button off input
-							vjoy.SetBtn(reading, opt[0], int(opt[1]))
-							print('Button off sent')
 					elif opt[1] in axis:
 						# An Axis Input
 						reading = (reading + 1) << 8
