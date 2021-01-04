@@ -143,20 +143,24 @@ def joystick_run():
 				opt = table[key]
 				if options.verbose:
 					print(key, '->', opt, reading)
-				if key[0] == 176:
-					# A slider input
-					# Check that the output axis is valid
+				if key[0]:
+					# An input
+					# Check if it is configured as an axis or a button
 					# Note: We did not check if that axis is defined in vJoy
 					if not opt[1] in axis:
-						continue
-					reading = (reading + 1) << 8
-					vjoy.SetAxis(reading, opt[0], axis[opt[1]])
-				elif key[0] == 144:
-					# A button input
-					vjoy.SetBtn(reading, opt[0], int(opt[1]))
-				elif key[0] == 128:
-					# A button off input
-					vjoy.SetBtn(reading, opt[0], int(opt[1]))
+						# A button input
+						vjoy.SetBtn(reading, opt[0], int(opt[1]))
+						print('Button value sent')
+						if key[0] == 128:
+							# A button off input
+							vjoy.SetBtn(reading, opt[0], int(opt[1]))
+							print('Button off sent')
+					elif opt[1] in axis:
+						# An Axis Input
+						reading = (reading + 1) << 8
+						vjoy.SetAxis(reading, opt[0], axis[opt[1]])
+						print('Axis value sent')
+				print(opt)
 			time.sleep(0.1)
 	except:
 		#traceback.print_exc()
