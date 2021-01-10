@@ -133,16 +133,27 @@ def joystick_run():
 	try:
 		if options.verbose:
 			print('Ready. Use ctrl-c to quit.')
+		#Initialise history
+		previous_key = None
+		previous_vjoy_device = None
 		while True:
 			while midi.poll():
 				ipt = midi.read(1)
 				#print(ipt)
 				key = tuple(ipt[0][0][0:2])
 				reading = ipt[0][0][2]
-				# Check that the input is defined in table
+				# Filter out 248 clock messages.
 				if key[0] != 248:
 					print(key, reading)
+				# Check that the input is defined in table
 				if not key in table:
+					# If key isn't in table, it may be cancelling a previous key.
+					# Ignore clock messages and check read value.
+					if key[0] != 248 and reading == 0 and previous_key and previous_vjoy_device:
+						vjoy.SetBtn(reading, previous_key, int(previous_vjoy_device))
+						print("Zeroing previous key press")
+					elif key[0] != 248:
+						print("Key not specified in conf file")
 					continue
 				opt = table[key]
 				if options.verbose:
@@ -155,6 +166,8 @@ def joystick_run():
 						# A button input
 						vjoy.SetBtn(reading, opt[0], int(opt[1]))
 						print('Button value sent')
+						previous_key = opt[0]
+						previous_vjoy_device = opt[1]
 					elif opt[1] in axis:
 						# An Axis Input
 						reading = (reading + 1) << 8
