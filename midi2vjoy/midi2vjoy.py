@@ -51,8 +51,11 @@ def midi_test():
 		print('Device opened for testing. Use ctrl-c to quit.')
 		while True:
 			while m.poll():
-				print(m.read(1))
-			time.sleep(0.1)
+				raw = m.read(1)
+				key = tuple(raw[0][0][0:2])
+				if key[0] != 248:
+					print(raw)
+			time.sleep(0.01)
 	except:
 		m.close()
 		
@@ -137,7 +140,8 @@ def joystick_run():
 				key = tuple(ipt[0][0][0:2])
 				reading = ipt[0][0][2]
 				# Check that the input is defined in table
-				print(key, reading)
+				if key[0] != 248:
+					print(key, reading)
 				if not key in table:
 					continue
 				opt = table[key]
@@ -157,7 +161,7 @@ def joystick_run():
 						vjoy.SetAxis(reading, opt[0], axis[opt[1]])
 						print('Axis value sent')
 				print(opt)
-			time.sleep(0.1)
+			time.sleep(0.01)
 	except:
 		#traceback.print_exc()
 		pass
