@@ -156,7 +156,7 @@ def joystick_run():
 					vjoy.SetBtn(reading, opt[0], int(opt[1]))
 				elif key[0] == 128:
 					# A button off input
-					vjoy.SetBtn(reading, opt[0], int(opt[1]))
+					vjoy.SetBtn(0, opt[0], int(opt[1]))
 			time.sleep(0.1)
 	except:
 		#traceback.print_exc()
