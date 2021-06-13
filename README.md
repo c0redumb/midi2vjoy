@@ -61,17 +61,22 @@ Each mapping line has four numbers. This correspond to mapping an axis or button
 Below the my mapping configuration file for Xsession-Pro.
 
 ```
-# Midi to vJoy translation
-# The format is one line for each control in the format of
-#       m_type, m_control, v_id, v_number
-# m_type is the 176 (slider) or 144 (button).
-# m_control is the ID of the midi message.
-# The m_type and m_control value of each MIDI input can be found
-# when running the program in test mode. Just push/move the control
-# and watch the messages showing up on the screen.
-# v_id is the vJoystick ID where the MIDI message is translated to.
-# v_number is the axis or button number MIDI message is contolling.
-# The axis may be 'X', 'Y', 'Z', 'RX', 'RY', 'RZ', 'SL0', or 'SL1'.
+#  Midi to vJoy translation
+#  The format is one line for each control, with tab-separated values,
+#  using the following value ordering:
+#
+#      m_type    m_control    v_id    v_number
+#
+#  m_type is the 176 (slider) or 144 (button).
+#  m_control is the ID of the midi message.
+#  v_id is the vJoystick ID where the MIDI message is translated to.
+#  v_number is the axis or button number MIDI message is contolling.
+#
+#  The m_type and m_control value of each MIDI input can be found
+#  when running the program in test mode. Just push/move the control
+#  and watch the messages showing up on the screen.
+#
+#  The axis may be 'X', 'Y', 'Z', 'RX', 'RY', 'RZ', 'SL0', or 'SL1'.
 
 176	12	1	Z
 176	11	1	RX
