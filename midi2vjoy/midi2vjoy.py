@@ -137,7 +137,7 @@ def joystick_run():
 				key = tuple(ipt[0][0][0:2])
 				reading = ipt[0][0][2]
 				# Check that the input is defined in table
-				#print(key, reading)
+				print(key, reading)
 				if not key in table:
 					continue
 				opt = table[key]
@@ -151,7 +151,7 @@ def joystick_run():
 						continue
 					reading = (reading + 1) << 8
 					vjoy.SetAxis(reading, opt[0], axis[opt[1]])
-				elif key[0] in {144, 154, 138}:
+				elif key[0] in {144, 154, 138, 128}:
 					# A button input
 					vjoy.SetBtn(reading, opt[0], int(opt[1]))
 			time.sleep(0.1)
