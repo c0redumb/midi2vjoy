@@ -29,6 +29,18 @@ import winreg
 # Axis mapping
 axis = {'X': 0x30, 'Y': 0x31, 'Z': 0x32, 'RX': 0x33, 'RY': 0x34, 'RZ': 0x35,
 		'SL0': 0x36, 'SL1': 0x37, 'WHL': 0x38, 'POV': 0x39}
+
+
+# Slider or Pitchbend keys(m_types)
+sliders = {176, 224}
+
+# Buttons with different On/Off keys(m_types)
+btns = {144, 128, 153, 137}
+
+# If you want somthing with an m_type of 176 or 244 to behave like a btn 
+# put the m_control value here
+sliderOverride = {}
+
 		
 # Globals
 options = None
@@ -133,7 +145,7 @@ def joystick_run():
 		while True:
 			while midi.poll():
 				ipt = midi.read(1)
-				#print(ipt)
+				# print(ipt)
 				key = tuple(ipt[0][0][0:2])
 				reading = ipt[0][0][2]
 				# Check that the input is defined in table
@@ -143,20 +155,18 @@ def joystick_run():
 				opt = table[key]
 				if options.verbose:
 					print(key, '->', opt, reading)
-				if key[0] == 176:
-					# A slider input
+				if key[0] in (sliders) and key[1] not in (sliderOverride):
+					# A slider/PitchBend input
 					# Check that the output axis is valid
 					# Note: We did not check if that axis is defined in vJoy
 					if not opt[1] in axis:
 						continue
 					reading = (reading + 1) << 8
 					vjoy.SetAxis(reading, opt[0], axis[opt[1]])
-				elif key[0] == 144:
-					# A button input
+				elif key[0] in (btns) or key[1] in (sliderOverride):
+					# A Button/SliderOverride input
 					vjoy.SetBtn(reading, opt[0], int(opt[1]))
-				elif key[0] == 128:
-					# A button off input
-					vjoy.SetBtn(reading, opt[0], int(opt[1]))
+
 			time.sleep(0.1)
 	except:
 		#traceback.print_exc()
