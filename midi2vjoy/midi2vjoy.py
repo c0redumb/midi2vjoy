@@ -14,19 +14,7 @@ import winreg
 # Axis mapping
 axis = {'X': 0x30, 'Y': 0x31, 'Z': 0x32, 'RX': 0x33, 'RY': 0x34, 'RZ': 0x35,
 		'SL0': 0x36, 'SL1': 0x37, 'WHL': 0x38, 'POV': 0x39}
-
-
-# Slider or Pitchbend keys(m_types)
-sliders = {176, 224}
-
-# Buttons with different On/Off keys(m_types)
-btns = {144, 128, 153, 137}
-
-# If you want somthing with an m_type of 176 or 244 to behave like a btn 
-# put the m_control value here
-sliderOverride = {}
-
-		
+	
 # Globals
 options = None
 
@@ -48,8 +36,11 @@ def midi_test():
 		print('Device opened for testing. Use ctrl-c to quit.')
 		while True:
 			while m.poll():
-				print(m.read(1))
-			time.sleep(0.1)
+				raw = m.read(1)
+				key = tuple(raw[0][0][0:2])
+				if key[0] != 248:
+					print(raw)
+			time.sleep(0.01)
 	except:
 		m.close()
 		
@@ -127,32 +118,52 @@ def joystick_run():
 	try:
 		if options.verbose:
 			print('Ready. Use ctrl-c to quit.')
+		#Initialise history
+		previous_key = None
+		previous_vjoy_device = None
 		while True:
 			while midi.poll():
 				ipt = midi.read(1)
 				# print(ipt)
 				key = tuple(ipt[0][0][0:2])
 				reading = ipt[0][0][2]
+				# Filter out 248 clock messages.
+				if key[0] != 248:
+					print(key, reading)
 				# Check that the input is defined in table
-				print(key, reading)
 				if not key in table:
+					# If key isn't in table, it may be cancelling a previous key.
+					# Ignore clock messages and check read value.
+					if key[0] != 248 and reading == 0 and previous_key and previous_vjoy_device:
+						vjoy.SetBtn(reading, previous_key, int(previous_vjoy_device))
+						print("Zeroing previous key press")
+					#It turns out Key 128 has a value of 127 on some devices that use it as a 'cancel' key.
+					elif key[0] == 128 and previous_key and previous_vjoy_device:
+						vjoy.SetBtn(0, previous_key, int(previous_vjoy_device))
+						print("Zeroing previous key press")
+					elif key[0] != 248:
+						print("Key not specified in conf file")
 					continue
 				opt = table[key]
 				if options.verbose:
 					print(key, '->', opt, reading)
-				if key[0] in (sliders) and key[1] not in (sliderOverride):
-					# A slider/PitchBend input
-					# Check that the output axis is valid
+				if key[0]:
+					# An input
+					# Check if it is configured as an axis or a button
 					# Note: We did not check if that axis is defined in vJoy
 					if not opt[1] in axis:
-						continue
-					reading = (reading + 1) << 8
-					vjoy.SetAxis(reading, opt[0], axis[opt[1]])
-				elif key[0] in (btns) or key[1] in (sliderOverride):
-					# A Button/SliderOverride input
-					vjoy.SetBtn(reading, opt[0], int(opt[1]))
-
-			time.sleep(0.1)
+						# A button input
+						vjoy.SetBtn(reading, opt[0], int(opt[1]))
+						print('Button value sent')
+						previous_key = opt[0]
+						previous_vjoy_device = opt[1]
+					elif opt[1] in axis:
+						# An Axis Input
+						reading = (reading + 1) << 8
+						vjoy.SetAxis(reading, opt[0], axis[opt[1]])
+						print('Axis value sent')
+				print(opt)
+			time.sleep(0.01)
 	except:
 		#traceback.print_exc()
 		pass
