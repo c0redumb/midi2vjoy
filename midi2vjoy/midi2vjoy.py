@@ -152,6 +152,10 @@ def joystick_run():
 					if key[0] != 248 and reading == 0 and previous_key and previous_vjoy_device:
 						vjoy.SetBtn(reading, previous_key, int(previous_vjoy_device))
 						print("Zeroing previous key press")
+					#It turns out Key 128 has a value of 127 on some devices that use it as a 'cancel' key.
+					elif key[0] == 128 and previous_key and previous_vjoy_device:
+						vjoy.SetBtn(0, previous_key, int(previous_vjoy_device))
+						print("Zeroing previous key press")
 					elif key[0] != 248:
 						print("Key not specified in conf file")
 					continue
