@@ -14,19 +14,7 @@ import winreg
 # Axis mapping
 axis = {'X': 0x30, 'Y': 0x31, 'Z': 0x32, 'RX': 0x33, 'RY': 0x34, 'RZ': 0x35,
 		'SL0': 0x36, 'SL1': 0x37, 'WHL': 0x38, 'POV': 0x39}
-
-
-# Slider or Pitchbend keys(m_types)
-sliders = {176, 224}
-
-# Buttons with different On/Off keys(m_types)
-btns = {144, 128, 153, 137}
-
-# If you want somthing with an m_type of 176 or 244 to behave like a btn 
-# put the m_control value here
-sliderOverride = {}
-
-		
+	
 # Globals
 options = None
 
