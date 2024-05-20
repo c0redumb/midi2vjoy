@@ -70,7 +70,7 @@ Below the my mapping configuration file for Xsession-Pro.
 #  m_type is the 176 (slider) or 144 (button).
 #  m_control is the ID of the midi message.
 #  v_id is the vJoystick ID where the MIDI message is translated to.
-#  v_number is the axis or button number MIDI message is contolling.
+#  v_number is the axis or button number MIDI message is controlling.
 #
 #  The m_type and m_control value of each MIDI input can be found
 #  when running the program in test mode. Just push/move the control
